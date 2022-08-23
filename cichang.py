@@ -9,11 +9,16 @@ import zipfile
 import pandas as pd
 import requests
 
+import os, os.path
+
 HJ_APPKEY = "45fd17e02003d89bee7f046bb494de13"
 LOGIN_URL = "https://pass.hujiang.com/Handler/UCenter.json?action=Login&isapp=true&language=zh_CN&password={password}&timezone=8&user_domain=hj&username={user_name}"
 COVERT_URL = "https://pass-cdn.hjapi.com/v1.1/access_token/convert"
+# type 1: current & used
+# type 3: used
+# type 4: current
 MY_BOOKS_URL = (
-    "https://cichang.hjapi.com/v3/user/me/book_study?type=4&start=0&limit=1000"
+    "https://cichang.hjapi.com/v3/user/me/book_study?type=3&start=0&limit=1000"
 )
 STUDY_BOOK_INFO_URL = "https://cichang.hjapi.com/v3/user/me/book_study/{book_id}"
 STUDY_BOOK_RESOURCE_INFO_URL = (
@@ -78,7 +83,7 @@ def login(user_name, password):
     r = s.get(LOGIN_URL.format(user_name=user_name, password=password_md5))
     if not r.ok:
         raise Exception(f"Someting is wrong to login -- {r.text}")
-    print(r.json())
+    # print(r.json())
     club_auth_cookie = r.json()["Data"]["Cookie"]
     data = {"club_auth_cookie": club_auth_cookie}
     headers = {"hj_appkey": HJ_APPKEY, "Content-Type": "application/json"}
@@ -90,6 +95,11 @@ def login(user_name, password):
     headers["Access-Token"] = access_token
     s.headers = headers
     return s
+
+
+def make_path(s, prefix=""):
+    # Anki format: [sound:audio\words\4100495.mp3]
+    return f'[sound:{prefix+str(s)}.mp3]'
 
 
 def parse_to_pandas(file_root=DEFAULT_WORD_FILE_ROOT):
@@ -108,23 +118,38 @@ def parse_to_pandas(file_root=DEFAULT_WORD_FILE_ROOT):
             "UnitID",
         ]
     ]
+
+    df["WordAudio"] = df["WordID"].apply(make_path, prefix="audio\words\\")
+    df["SentenceAudio"] = df["WordID"].apply(make_path)
     df["WordDef"] = df["WordDef"].apply(decode)
     df["Sentence"] = df["Sentence"].apply(decode)
     df["SentenceDef"] = df["SentenceDef"].apply(decode)
-    df["WordDef"] = df["WordDef"].apply(decode)
     return df
+
+
+def print_current_titles(learning_books_info):
+    titles = [book["book"]["name"] + ' ' + str(book["book"]["wordCount"]) for book in learning_books_info]
+    titles.sort()
+
+    for title in titles:
+        print(title)
 
 
 def main(user_name, password):
     s = login(user_name, password)
     learning_books_info = get_learning_books_info(s)
-    print("your learning book info is", learning_books_info)
 
     if not learning_books_info:
         print("No learning book for now")
+
     # only get the first book, you can DIY here
     now_learning_book_id = learning_books_info[0]["book"]["id"]
     book_resource_data = get_book_resource_info(s, now_learning_book_id)
+
+    print_current_titles(learning_books_info)
+
+    return
+
     for k, v in book_resource_data.items():
         if k not in TO_SAVE_FILES_DICT:
             continue
@@ -137,6 +162,8 @@ def main(user_name, password):
                 print(f"Get zip version failed with error {str(e)}")
                 raise
         zip_pass = get_zip_password(str(version))
+
+        # TODO for each book
         file_dir = os.path.join("FILES_OUT", TO_SAVE_FILES_DICT.get(k))
         if not os.path.exists(file_dir):
             os.mkdir(file_dir)
@@ -146,6 +173,7 @@ def main(user_name, password):
         except Exception as e:
             print(str(e))
             pass
+
     df = parse_to_pandas()
     df.to_csv(DEFAULT_TO_CSV_NAME)
 
