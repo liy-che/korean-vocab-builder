@@ -1,3 +1,6 @@
+# How to run:
+#   python main.py PATH_TO_WORD_LIST
+
 import argparse
 import os
 import sys

@@ -1,3 +1,6 @@
+# How to run:
+#   python cichang.py 'your_username' 'your_password'
+
 import argparse
 import base64
 import hashlib
@@ -6,7 +9,7 @@ import json
 import os
 import zipfile
 
-import run_jjogaegi
+import main
 import numpy as np
 import pandas as pd
 import requests
@@ -195,7 +198,7 @@ def main(user_name, password):
     with open(DEFAULT_WORD_LIST_NAME, "w") as f_out:
         f_out.write("\n".join(df["Word"]))
 
-    run_jjogaegi.download_info(DEFAULT_WORD_LIST_NAME)
+    main.download_info(DEFAULT_WORD_LIST_NAME)
 
     krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, names=["krdictAudio"])
     krdict_df["krdictAudio"] = krdict_df["krdictAudio"].replace(to_replace=".*(?<!\])$", value=np.nan, regex=True)
