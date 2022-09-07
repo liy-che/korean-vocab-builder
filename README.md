@@ -24,10 +24,36 @@ If you use 开心词场, you can export your vocabulary books as a word list and
 *: some audio are TTS, meaning they are synthesized by a computer rather than spoken by a human.
 
 ## Included Files
+There are 4 scripts in this repository. Choose according to your needs. The bolded output files are the final .CSV file and/or the downloaded audio files. `hasAudio.txt` shows which words' audio has been downloaded and which ones are unavailable.
+
+### main.py
 `main.py` runs your word list through jjogaegi and download_audio.sh to get word info and audio from krdict
-</br>
+```
+python main.py PATH_TO_WORD_LIST
+```
+Input: word list </br>
+Output: JJOGAEGI_OUT/hasAudio.txt, **JJOGAEGI_OUT/jjogaegi_out.csv**, **JJOGAEGI_OUT/(audio files)**
+
+### cichang.py
 `cichang.py` gets a word list from your 开心词场 account and retrieves the same information as you would get from main.py but with extra information from 开心词场
-</br>
+```
+python cichang.py 'your-username' 'your-password'
+```
+Input: username, password </br>
+Output: word list, FILE_OUT/, JJOGAEGI_OUT/hasAudio.txt, JJOGAEGI_OUT/jjogaegi_out.csv, **JJOGAEGI_OUT/(audio files)**, **my_learning_book.csv**
+
+### download_audio.sh
 `download_audio.sh` is already called in main.py and cichang.py but can be ran independently if you just want to get audio files for a list of words.
-</br>
-`clear_output.sh` clears all output from running the any of the above files.
+```
+./download_audio.sh PATH_TO_WORD_LIST OUTPUT_FOLDER
+```
+Input: word list, path to output folder </br>
+Output: **OUTPUT_FOLDER/(audio files)**
+
+### clear_output.sh
+`clear_output.sh` clears all output from running the any of the above files. Do not run this before making a backup if you need to keep any of the output from the last run.
+```
+./clear_output.sh
+```
+Input: None </br>
+Output: None
