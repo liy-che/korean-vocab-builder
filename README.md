@@ -57,3 +57,6 @@ Output: **OUTPUT_FOLDER/(audio files)**
 ```
 Input: None </br>
 Output: None
+
+## Acknowledgement
+Special thanks to [@ryanbrainard](https://github.com/ryanbrainard) for sharing the jjogaegi project and [@yihong0618](https://github.com/yihong0618) for sharing the cichang script with the community.
