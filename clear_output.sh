@@ -8,5 +8,4 @@
 
 rm -rf FILES_OUT/*
 rm -rf JJOGAEGI_OUT/*
-rm -f words.txt
 rm -f my_learning_book.csv

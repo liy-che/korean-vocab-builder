@@ -31,7 +31,7 @@ There are 4 scripts in this repository. Choose according to your needs. The bold
 ```
 python main.py PATH_TO_WORD_LIST
 ```
-Input: word list </br>
+Input: words.txt </br>
 Output: JJOGAEGI_OUT/hasAudio.txt, **JJOGAEGI_OUT/jjogaegi_out.csv**, **JJOGAEGI_OUT/(audio files)**
 
 ### cichang.py
@@ -40,14 +40,14 @@ Output: JJOGAEGI_OUT/hasAudio.txt, **JJOGAEGI_OUT/jjogaegi_out.csv**, **JJOGAEGI
 python cichang.py 'your-username' 'your-password'
 ```
 Input: username, password </br>
-Output: word list, FILE_OUT/, JJOGAEGI_OUT/hasAudio.txt, JJOGAEGI_OUT/jjogaegi_out.csv, **JJOGAEGI_OUT/(audio files)**, **my_learning_book.csv**
+Output: words.txt, FILE_OUT/, JJOGAEGI_OUT/hasAudio.txt, JJOGAEGI_OUT/jjogaegi_out.csv, **JJOGAEGI_OUT/(audio files)**, **my_learning_book.csv**
 
 ### download_audio.sh
 `download_audio.sh` is already called in main.py and cichang.py but can be ran independently if you just want to get audio files for a list of words.
 ```
 ./download_audio.sh PATH_TO_WORD_LIST OUTPUT_FOLDER
 ```
-Input: word list, path to output folder </br>
+Input: words.txt, path to output folder </br>
 Output: **OUTPUT_FOLDER/(audio files)**
 
 ### clear_output.sh
