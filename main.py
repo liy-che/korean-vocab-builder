@@ -27,6 +27,7 @@ def download_info(path_to_word_list):
     # jjogaegi -interactive -formatter csv -in path_to_input_file -lookup -out output_file_name -parser list -header "Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English"
     subprocess.call(['jjogaegi', 
                     '-lookup', 
+                    '-interactive',
                     '-formatter', 'csv', 
                     '-parser', 'list',
                     '-in', os.path.expanduser(list_path), 

@@ -9,7 +9,7 @@ import json
 import os
 import zipfile
 
-import main
+from main import download_info
 import numpy as np
 import pandas as pd
 import requests
@@ -193,12 +193,13 @@ def main(user_name, password):
             pass
 
     df = parse_to_pandas()
+    df.to_csv(DEFAULT_TO_CSV_NAME)
 
     # save words only to a text list
     with open(DEFAULT_WORD_LIST_NAME, "w") as f_out:
         f_out.write("\n".join(df["Word"]))
 
-    main.download_info(DEFAULT_WORD_LIST_NAME)
+    download_info(DEFAULT_WORD_LIST_NAME)
 
     krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, names=["krdictAudio"])
     krdict_df["krdictAudio"] = krdict_df["krdictAudio"].replace(to_replace=".*(?<!\])$", value=np.nan, regex=True)
