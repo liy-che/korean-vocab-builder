@@ -38,12 +38,14 @@ while IFS= read -r line || [ -n "$line" ]; do
             hasAudio=false
         fi
 
-        wget --no-check-certificate $audioLink -O "$2/$word".mp3
+        uuid=$(uuidgen)
+
+        wget --no-check-certificate $audioLink -O "$2/$uuid".mp3
     fi
     
     if [ "$hasAudio" = true ]
     then
-        echo "[sound:$word.mp3]" >> $outFile
+        echo "$word [sound:$uuid.mp3]" >> $outFile
     else
         echo "$word" >> $outFile
     fi

@@ -27,7 +27,7 @@ def download_info(path_to_word_list):
     # jjogaegi -interactive -formatter csv -in path_to_input_file -lookup -out output_file_name -parser list -header "Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English"
     subprocess.call(['jjogaegi', 
                     '-lookup', 
-                    '-interactive',
+                    "interactive",
                     '-formatter', 'csv', 
                     '-parser', 'list',
                     '-in', os.path.expanduser(list_path), 
@@ -38,7 +38,7 @@ def download_info(path_to_word_list):
     subprocess.call(["./{}".format(AUDIO_DOWNLOAD_SCRIPT), list_path, FILES_ROOT])
 
     jjogaegi_df = pd.read_csv(DEFAULT_OUTPUT_NAME)
-    krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, names=["krdictAudio"])
+    krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, sep=" ", header=None, usecols=[1], names=["krdictAudio"])
     krdict_df["krdictAudio"] = krdict_df["krdictAudio"].replace(to_replace=".*(?<!\])$", value=np.nan, regex=True)
     jjogaegi_df[" Audio"] = krdict_df["krdictAudio"]
     jjogaegi_df.to_csv(DEFAULT_OUTPUT_NAME)

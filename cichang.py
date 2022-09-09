@@ -201,13 +201,14 @@ def main(user_name, password):
 
     download_info(DEFAULT_WORD_LIST_NAME)
 
-    krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, names=["krdictAudio"])
+    krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, sep=" ", header=None, usecols=[1], names=["krdictAudio"])
     krdict_df["krdictAudio"] = krdict_df["krdictAudio"].replace(to_replace=".*(?<!\])$", value=np.nan, regex=True)
     
-    df["WordAudio"] = krdict_df["krdictAudio"].fillna(df["WordAudio"])
+    df[" Audio"] = krdict_df["krdictAudio"].fillna(df["WordAudio"])
+    df = df.drop("WordAudio", axis=1)
 
-    jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME)
-    final_df = pd.concat([df, jjogaegi_df], axis=1)
+    jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME, index_col=0)
+    final_df = pd.concat([df, jjogaegi_df.reset_index(drop=True)], axis=1)
 
     final_df.to_csv(DEFAULT_TO_CSV_NAME)
 
