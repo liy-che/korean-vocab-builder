@@ -7,6 +7,8 @@
 tempFile=$2/index.html
 outFile=$2/hasAudio.txt
 
+mkdir -p $2
+
 if [ -f "$outFile" ]; then
     rm $outFile
 fi
@@ -36,11 +38,10 @@ while IFS= read -r line || [ -n "$line" ]; do
         then
             echo "ERROR: No mp3 available for word $word" >&2
             hasAudio=false
+        else
+            uuid=$(uuidgen)
+            wget --no-check-certificate $audioLink -O "$2/$uuid".mp3
         fi
-
-        uuid=$(uuidgen)
-
-        wget --no-check-certificate $audioLink -O "$2/$uuid".mp3
     fi
     
     if [ "$hasAudio" = true ]
