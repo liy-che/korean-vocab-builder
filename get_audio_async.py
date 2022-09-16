@@ -8,7 +8,6 @@ import warnings
 import aiofiles
 import aiohttp
 from bs4 import BeautifulSoup
-import requests
 from google.cloud import texttospeech
 
 import os, os.path
@@ -29,33 +28,40 @@ DEFAULT_OUTPUT_FOLDER = "audio"
     # corner cases: superscript multiple definitions, double audio
 
 
+async def save_file(filename, content):
+    async with aiofiles.open(filename, "wb") as outfile:
+        await outfile.write(content)
+
+
+def parse(query, page):
+    soup = BeautifulSoup(page, "html.parser")
+    topResult = soup.find(class_="word_type1_17")
+    audioURL = ""
+    if topResult and query == topResult.contents[0].string.strip():
+        audioAnchor = topResult.parent.parent.find("a", class_="sound")
+        if audioAnchor:
+            audioHref = audioAnchor["href"]
+            audioURL = re.search("https.*mp3", audioHref).group(0)
+    return audioURL
+
+
 async def get_audio(session, query, filename, text_to_speech):
     # get audio link
     pageURL = "https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&ParaWordNo=&mainSearchWord={}".format(query)
     async with session.get(pageURL) as resp:
         page = await resp.text()
 
-    soup = BeautifulSoup(page, "html.parser")
-    topResult = soup.find(class_="word_type1_17")
-    needAudio = True
-    if topResult and query == topResult.contents[0].string.strip():
-        audioAnchor = topResult.parent.parent.find("a", class_="sound")
-        if audioAnchor:
-            needAudio = False
-            audioHref = audioAnchor["href"]
-            audioURL = re.search("https.*mp3", audioHref).group(0)
-            async with session.get(audioURL) as resp:
-                audioData = await resp.read()
-
-            async with aiofiles.open(filename, "wb") as outfile:
-                await outfile.write(audioData)
-
-    if needAudio:
+    audioURL = parse(query, page)
+    if audioURL:
+        async with session.get(audioURL) as resp:
+            audioData = await resp.read()
+        await save_file(filename, audioData)
+    else:
         await text_to_speech(query, filename)
 
 
 def get_speech():
-    # # init google cloud text-to-speech
+    # init google cloud text-to-speech
     client = texttospeech.TextToSpeechClient()
     voice = texttospeech.VoiceSelectionParams(
         language_code="ko-KR", name="ko-KR-Wavenet-A", ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
@@ -69,8 +75,7 @@ def get_speech():
         response = client.synthesize_speech(
             input=synthesis_input, voice=voice, audio_config=audio_config
         )
-        async with aiofiles.open(filename, "wb") as outfile:
-            await outfile.write(response.audio_content)
+        await save_file(filename, response.audio_content)
 
     return get_input
 
