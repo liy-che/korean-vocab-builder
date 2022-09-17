@@ -10,12 +10,11 @@ import os
 import zipfile
 
 from main import download_info
-import numpy as np
+from get_audio_async import make_audio_path
 import pandas as pd
 import requests
 
 import os, os.path
-import subprocess
 
 HJ_APPKEY = "45fd17e02003d89bee7f046bb494de13"
 LOGIN_URL = "https://pass.hujiang.com/Handler/UCenter.json?action=Login&isapp=true&language=zh_CN&password={password}&timezone=8&user_domain=hj&username={user_name}"
@@ -35,15 +34,13 @@ TO_SAVE_FILES_DICT = {
     "wordAudioResource": "words",
     "textResource": "files",
 }
-FILES_ROOT = "FILES_OUT"
+FILES_ROOT = "CICHANG_FILES_OUT"
 DEFAULT_WORD_FILE_ROOT = os.path.join(FILES_ROOT, "files", "word.txt")
 DEFAULT_TO_CSV_NAME = "my_learning_book.csv"
 
 DEFAULT_WORD_LIST_NAME = "words.txt"
 IN_FILES_ROOT = "JJOGAEGI_OUT"
 DEFAULT_JJOGAEGI_OUTPUT_NAME = os.path.join(IN_FILES_ROOT, "jjogaegi_output.csv")
-DEFAULT_AUDIO_LIST_NAME = os.path.join(IN_FILES_ROOT, "hasAudio.txt")
-AUDIO_DOWNLOAD_SCRIPT = "download_audio.sh"
 
 
 def md5_encode(string):
@@ -109,11 +106,6 @@ def login(user_name, password):
     return s
 
 
-def make_audio_path(s, prefix=""):
-    # Anki format: [sound:audio\words\4100495.mp3]
-    return f'[sound:{prefix+str(s)}.mp3]'
-
-
 def parse_to_pandas(file_root=DEFAULT_WORD_FILE_ROOT):
     with open(file_root) as f:
         data = json.load(f)
@@ -131,7 +123,7 @@ def parse_to_pandas(file_root=DEFAULT_WORD_FILE_ROOT):
         ]
     ]
 
-    df["WordAudio"] = df["WordID"].apply(make_audio_path, prefix="audio\words\\")
+    # df["WordAudio"] = df["WordID"].apply(make_audio_path, prefix="audio\words\\")
     df["SentenceAudio"] = df["WordID"].apply(make_audio_path)
     df["WordDef"] = df["WordDef"].apply(decode)
     df["Sentence"] = df["Sentence"].apply(decode)
@@ -182,7 +174,7 @@ def main(user_name, password):
         zip_pass = get_zip_password(str(version))
 
         # TODO for each book
-        file_dir = os.path.join("FILES_OUT", TO_SAVE_FILES_DICT.get(k))
+        file_dir = os.path.join("CICHANG_FILES_OUT", TO_SAVE_FILES_DICT.get(k))
         if not os.path.exists(file_dir):
             os.mkdir(file_dir)
         try:
@@ -193,7 +185,6 @@ def main(user_name, password):
             pass
 
     df = parse_to_pandas()
-    df.to_csv(DEFAULT_TO_CSV_NAME)
 
     # save words only to a text list
     with open(DEFAULT_WORD_LIST_NAME, "w") as f_out:
@@ -201,15 +192,8 @@ def main(user_name, password):
 
     download_info(DEFAULT_WORD_LIST_NAME)
 
-    krdict_df = pd.read_csv(DEFAULT_AUDIO_LIST_NAME, sep=" ", header=None, usecols=[1], names=["krdictAudio"])
-    krdict_df["krdictAudio"] = krdict_df["krdictAudio"].replace(to_replace=".*(?<!\])$", value=np.nan, regex=True)
-    
-    df[" Audio"] = krdict_df["krdictAudio"].fillna(df["WordAudio"])
-    df = df.drop("WordAudio", axis=1)
-
     jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME, index_col=0)
     final_df = pd.concat([df, jjogaegi_df.reset_index(drop=True)], axis=1)
-
     final_df.to_csv(DEFAULT_TO_CSV_NAME)
 
 

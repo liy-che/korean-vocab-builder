@@ -1,3 +1,8 @@
+# How to run:
+#   python get_audio_async.py [-h] [-i] [-o OUT_FOLDER] word_list_path
+# Example:
+#   python get_audio_async.py -i -o audio_folder words.txt
+
 import argparse
 import asyncio
 import uuid
@@ -28,36 +33,45 @@ DEFAULT_OUTPUT_FOLDER = "audio"
     # corner cases: superscript multiple definitions, double audio
 
 
-async def save_file(filename, content):
-    async with aiofiles.open(filename, "wb") as outfile:
+def make_audio_path(s, prefix=""):
+    # Anki format: [sound:audio\words\4100495.mp3]
+    return f'[sound:{prefix+str(s)}.mp3]'
+
+
+async def save_file(full_filename, content):
+    async with aiofiles.open(full_filename, "wb") as outfile:
         await outfile.write(content)
 
 
 def parse(query, page):
     soup = BeautifulSoup(page, "html.parser")
-    topResult = soup.find(class_="word_type1_17")
+    top_result = soup.find(class_="word_type1_17")
     audioURL = ""
-    if topResult and query == topResult.contents[0].string.strip():
-        audioAnchor = topResult.parent.parent.find("a", class_="sound")
-        if audioAnchor:
-            audioHref = audioAnchor["href"]
-            audioURL = re.search("https.*mp3", audioHref).group(0)
+    if top_result and query == top_result.contents[0].string.strip():
+        audio_anchor = top_result.parent.parent.find("a", class_="sound")
+        if audio_anchor:
+            audio_href = audio_anchor["href"]
+            audioURL = re.search("https.*mp3", audio_href).group(0)
     return audioURL
 
 
-async def get_audio(session, query, filename, text_to_speech):
+async def get_audio(session, query, filename, output_folder, text_to_speech):
     # get audio link
     pageURL = "https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&ParaWordNo=&mainSearchWord={}".format(query)
     async with session.get(pageURL) as resp:
         page = await resp.text()
 
+    full_filename = os.path.join(output_folder, filename)
     audioURL = parse(query, page)
     if audioURL:
         async with session.get(audioURL) as resp:
-            audioData = await resp.read()
-        await save_file(filename, audioData)
+            audio_data = await resp.read()
+        await save_file(full_filename, audio_data)
+        return (filename, 1)
     else:
-        await text_to_speech(query, filename)
+        await text_to_speech(query, full_filename)
+        print("{} audio generated".format(query))
+        return (filename, 0)
 
 
 def get_speech():
@@ -70,12 +84,12 @@ def get_speech():
         audio_encoding=texttospeech.AudioEncoding.MP3
     )
 
-    async def get_input(query, filename):
+    async def get_input(query, full_filename):
         synthesis_input = texttospeech.SynthesisInput(text=query)
         response = client.synthesize_speech(
             input=synthesis_input, voice=voice, audio_config=audio_config
         )
-        await save_file(filename, response.audio_content)
+        await save_file(full_filename, response.audio_content)
 
     return get_input
 
@@ -88,7 +102,7 @@ async def main(word_list_path, output_folder, getUuid):
 
     text_to_speech = get_speech()
 
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, force_close=True)) as session:
         tasks = []
         with open(word_list_path) as file:
             lines = file.readlines()
@@ -96,12 +110,13 @@ async def main(word_list_path, output_folder, getUuid):
                 query = line.strip()
                 if not query: continue
 
-                filename = str(uuid.uuid4()) if getUuid else query
-                filename = os.path.join(output_folder, "{}.mp3".format(filename))
-                task = asyncio.ensure_future(get_audio(session, query, filename, text_to_speech))
+                filename = (str(uuid.uuid4()) if getUuid else query) + ".mp3"
+                task = asyncio.ensure_future(get_audio(session, query, filename, output_folder, text_to_speech))
                 tasks.append(task)
 
-        await asyncio.gather(*tasks)               
+        filenames = await asyncio.gather(*tasks)  
+
+    return filenames        
 
 
 if __name__ == "__main__":
@@ -110,6 +125,6 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--out", metavar="FOLDER", default=DEFAULT_OUTPUT_FOLDER, help="Where to save downloaded audio files")
     parser.add_argument("word_list_path", help="Path to text file which lists one word per line")
     options = parser.parse_args()
-    startTime = datetime.now()
+    start_time = datetime.now()
     asyncio.run(main(options.word_list_path, options.out, options.getUuid))
-    print("Execution time: ", datetime.now() - startTime)
+    print("Execution time: ", datetime.now() - start_time)
