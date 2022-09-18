@@ -2,8 +2,7 @@
 *.csv
 *.mp3
 words.txt
-FILES_OUT/
-JJOGAEGI_OUT/
+src/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

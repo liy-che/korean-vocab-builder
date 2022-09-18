@@ -5,6 +5,7 @@
 
 import argparse
 import asyncio
+from async_retrying import retry
 from unittest.mock import DEFAULT
 import uuid
 import re
@@ -58,11 +59,17 @@ def parse(query, page):
     return audioURL
 
 
+@retry(attempts=5)
+async def fetch_page(session, url):
+    async with session.get(url) as resp:
+        page = await resp.text()
+        return page
+
+
 async def get_audio(session, query, filename, output_folder, text_to_speech):
     # get audio link
     pageURL = "https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&ParaWordNo=&mainSearchWord={}".format(query)
-    async with session.get(pageURL) as resp:
-        page = await resp.text()
+    page = await fetch_page(session, pageURL)
 
     full_filename = os.path.join(output_folder, filename)
     audioURL = parse(query, page)
@@ -117,7 +124,7 @@ async def main(word_list_path, output_folder=DEFAULT_AUDIO_FOLDER, getUuid=True)
                 task = asyncio.ensure_future(get_audio(session, query, filename, output_folder, text_to_speech))
                 tasks.append(task)
 
-        filenames = await asyncio.gather(*tasks)  
+        filenames = await asyncio.gather(*tasks, return_exceptions=True)  
 
     return filenames        
 

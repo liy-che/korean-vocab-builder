@@ -112,11 +112,9 @@ def parse_to_pandas(file_root=DEFAULT_WORD_FILE_ROOT):
     df = pd.DataFrame(data)
     df = df[
         [
-            "ItemID",
             "WordID",
             "Word",
             "WordDef",
-            "SentenceID",
             "Sentence",
             "SentenceDef",
             "UnitID",
@@ -190,11 +188,13 @@ def main(user_name, password):
     with open(DEFAULT_WORD_LIST, "w") as f_out:
         f_out.write("\n".join(df["Word"]))
 
+    df = df.drop("WordID", axis=1)
+    df = df.drop("Word", axis=1)
     download_info(DEFAULT_WORD_LIST)
 
-    jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME, index_col=0)
-    final_df = pd.concat([df, jjogaegi_df.reset_index(drop=True)], axis=1)
-    final_df.to_csv(DEFAULT_TO_CSV_NAME)
+    jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME)
+    final_df = pd.concat([jjogaegi_df, df], axis=1)
+    final_df.to_csv(DEFAULT_TO_CSV_NAME, index=False)
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ def download_info(path_to_word_list):
     jjogaegi_df[" Audio"] = filename_list
 
     jjogaegi_df.insert(jjogaegi_df.columns.get_loc(" Audio"), " Audio Type", is_synthetic)
-    jjogaegi_df.to_csv(DEFAULT_OUTPUT_NAME)
+    jjogaegi_df.to_csv(DEFAULT_OUTPUT_NAME, index=False)
 
 
 if __name__ == "__main__":
