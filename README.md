@@ -71,34 +71,27 @@ Run instructions can be found on top of each scripts or by running `python scrip
 ## Examples
 * `main.py` and `get_audio.py` needs a word list as input. Make a list in the below format and save it as `words.txt`
 ```
-자격
-확신하다
-결혼하다
-이상하다
-억울하다
-순서
-
+약혼하다
+오페라
+낯설다
+자유롭다
 ```
 
 * Main output file `jjogaegi_out.csv` from running `main.py`
 ```
 Note ID	 External ID	 Hangul	 Hanja	 Korean Definition	 English Definition	 Pronunciation	 Audio Type	 Audio	 Image	 Grade	 Antonym	Example 1 Korean	Example 1 English	Example 2 Korean	Example 2 English
-def4413b-5e14-4a25-a4a9-1c20eee9bb0f	krdict:kor:80681:단어	팝콘		간을 하여 튀긴 옥수수.	popcorn := Seasoned and fried corn.		AI	[sound:5641f099-ead8-412a-a6e6-9cb0e3d1f764.mp3.mp3]	http://dicmedia.korean.go.kr:8899/front/search/searchResultView.do?file_no=103633			고소한 팝콘.		엄마께서 간식으로 팝콘을 튀겨 주셨다.	
-58bf43b9-067e-4acf-86cf-0a1d2c83480d	krdict:kor:24762:단어	자격증	資格證	일정한 자격을 인정하는 증서.	license; certificate := Paper proving that its holder is qualified in a field.	자격쯩		[sound:c75048a7-1a6e-44cb-965c-76453f90689c.mp3.mp3]	http://dicmedia.korean.go.kr:8899/front/search/searchResultView.do?file_no=105229	중급		교원 자격증.		나는 하루빨리 자격증을 취득해 사회 복지사가 되고 싶다.	
-24d61bc7-a907-421d-b689-b9955bd55653	krdict:kor:17173:단어	지내다		어떠한 정도나 상태로 생활하거나 살아가다.	live := To live in a certain state or condition.	지ː내다		[sound:5008046f-3f23-4163-b7b5-c0c7c57ab66a.mp3.mp3]		초급		지내는 도시.		그녀와 떨어져 지내는 시간은 나에게는 언제나 외롭고 쓸쓸했다.	
-ea939712-803c-4eea-b012-55d0497ec2ae	krdict:kor:17170:단어	처음		차례나 시간상으로 맨 앞.	first; forefront := The first in order or chronology.	처음		[sound:d2150e8b-4567-4fd4-9486-b4dc322a9bc9.mp3.mp3]		초급		노래의 처음.		승규는 시간이 지나도 늘 처음처럼 성실한 자세로 열심히 일한다.	<img width="3004" alt="image" src="https://user-images.githubusercontent.com/46834121/190883293-8f61c7f0-febf-4048-ae6c-741bfcfaa7bd.png">
-
+5cd37df5-0044-43d4-87d6-cdf9dd8157be	krdict:kor:67024:단어	약혼하다	約婚	결혼을 하기로 정식으로 약속하다.	engage := To officially promise to marry someone.	야콘하다		[sound:dca8b461-154d-404f-94d6-7b45b4f17b83.mp3.mp3]				약혼한 사이.		이미 그녀가 약혼했다는 사실에 많은 남자들이 아쉬워했다.	
+28ea7a9d-c934-44b7-9772-4a6dd111e3e4	krdict:kor:22019:단어	오페라		배우가 대사의 전부를 노래로 부르는, 음악과 연극과 춤 등을 종합한 무대 예술.	opera := A play combined with music and dance, in which actors and actresses sing their all lines.		AI	[sound:7b44ef37-109f-4af2-ab07-1fab689e54f7.mp3.mp3]		중급		오페라 가수.		어머니의 취미는 오페라를 감상하는 것이다.	
+6949a997-a0f0-4537-8239-181aff25bbea	krdict:kor:41324:단어	낯설다		전에 보거나 만난 적이 없어 모르는 사이이다.	unknown; unfamiliar; unacquainted := Having not previously encountered or seen someone, and thus not knowing him/her.	낟썰다		[sound:ab9c0951-c470-4e58-986d-987622d636be.mp3.mp3]		중급	낯익다	낯선 남자.		우리 집 개가 낯선 사람을 보고 으르렁거리기 시작했다.	<img width="2480" alt="image" src="https://user-images.githubusercontent.com/46834121/190925749-009b2e42-fe47-4da8-a86b-b74e56ad0813.png">
 ...
 ```
 
 * Main output file `my_learning_book.csv` from running `cichang.py`
 ```
-ItemID	WordID	Word	WordDef	SentenceID	Sentence	SentenceDef	UnitID	SentenceAudio	Note ID	 External ID	 Hangul	 Hanja	 Korean Definition	 English Definition	 Pronunciation	 Audio Type	 Audio	 Image	 Grade	 Antonym	Example 1 Korean	Example 1 English	Example 2 Korean	Example 2 English
-2104396	10078920	팝콘	[名词]爆米花（popcorn）	10135006	저는 영화를 볼 때 [팝콘]을 먹지 않아요.	我在看电影时不吃爆米花	1	[sound:10078920.mp3]	def4413b-5e14-4a25-a4a9-1c20eee9bb0f	krdict:kor:80681:단어	팝콘		간을 하여 튀긴 옥수수.	popcorn := Seasoned and fried corn.		AI	[sound:5641f099-ead8-412a-a6e6-9cb0e3d1f764.mp3.mp3]	http://dicmedia.korean.go.kr:8899/front/search/searchResultView.do?file_no=103633			고소한 팝콘.		엄마께서 간식으로 팝콘을 튀겨 주셨다.	
-2104397	10184980	자격증	[名词]资格证，证书	10135007	나는 커피 좋아하니까 바리스타 [자격증] 따고 싶어.	我喜欢咖啡，所以我想考咖啡师资格证。	1	[sound:10184980.mp3]	58bf43b9-067e-4acf-86cf-0a1d2c83480d	krdict:kor:24762:단어	자격증	資格證	일정한 자격을 인정하는 증서.	license; certificate := Paper proving that its holder is qualified in a field.	자격쯩		[sound:c75048a7-1a6e-44cb-965c-76453f90689c.mp3.mp3]	http://dicmedia.korean.go.kr:8899/front/search/searchResultView.do?file_no=105229	중급		교원 자격증.		나는 하루빨리 자격증을 취득해 사회 복지사가 되고 싶다.	
-2104398	10074941	지내다	[自动词]相处,度过	10135008	누나 잘 [지내]?	姐姐过的好吗？	1	[sound:10074941.mp3]	24d61bc7-a907-421d-b689-b9955bd55653	krdict:kor:17173:단어	지내다		어떠한 정도나 상태로 생활하거나 살아가다.	live := To live in a certain state or condition.	지ː내다		[sound:5008046f-3f23-4163-b7b5-c0c7c57ab66a.mp3.mp3]		초급		지내는 도시.		그녀와 떨어져 지내는 시간은 나에게는 언제나 외롭고 쓸쓸했다.	
-2104399	7501039	처음	[名词]开头，第一次，初次	10135009	나는 [처음]부터 생각했어	我一开始就想好了。	1	[sound:7501039.mp3]	ea939712-803c-4eea-b012-55d0497ec2ae	krdict:kor:17170:단어	처음		차례나 시간상으로 맨 앞.	first; forefront := The first in order or chronology.	처음		[sound:d2150e8b-4567-4fd4-9486-b4dc322a9bc9.mp3.mp3]		초급		노래의 처음.		승규는 시간이 지나도 늘 처음처럼 성실한 자세로 열심히 일한다.	<img width="4074" alt="image" src="https://user-images.githubusercontent.com/46834121/190883276-abd7e82b-5079-4e18-a834-22b76e15ecb7.png">
-
+Note ID	 External ID	 Hangul	 Hanja	 Korean Definition	 English Definition	 Pronunciation	 Audio Type	 Audio	 Image	 Grade	 Antonym	Example 1 Korean	Example 1 English	Example 2 Korean	Example 2 English	WordDef	Sentence	SentenceDef	UnitID	SentenceAudio
+5cd37df5-0044-43d4-87d6-cdf9dd8157be	krdict:kor:67024:단어	약혼하다	約婚	결혼을 하기로 정식으로 약속하다.	engage := To officially promise to marry someone.	야콘하다		[sound:dca8b461-154d-404f-94d6-7b45b4f17b83.mp3.mp3]				약혼한 사이.		이미 그녀가 약혼했다는 사실에 많은 남자들이 아쉬워했다.		[动词]订婚	두 분 곧 [약혼]하신다면서요.	听说两位马上要订婚了。	1	[sound:10264300.mp3]
+28ea7a9d-c934-44b7-9772-4a6dd111e3e4	krdict:kor:22019:단어	오페라		배우가 대사의 전부를 노래로 부르는, 음악과 연극과 춤 등을 종합한 무대 예술.	opera := A play combined with music and dance, in which actors and actresses sing their all lines.		AI	[sound:7b44ef37-109f-4af2-ab07-1fab689e54f7.mp3.mp3]		중급		오페라 가수.		어머니의 취미는 오페라를 감상하는 것이다.		[名词]歌剧	당신만을 위한 완벽한 [오페라] 극장 만들어 줄 테니까.	我会为你打造专属于你的完美歌剧院的。	1	[sound:7480389.mp3]
+6949a997-a0f0-4537-8239-181aff25bbea	krdict:kor:41324:단어	낯설다		전에 보거나 만난 적이 없어 모르는 사이이다.	unknown; unfamiliar; unacquainted := Having not previously encountered or seen someone, and thus not knowing him/her.	낟썰다		[sound:ab9c0951-c470-4e58-986d-987622d636be.mp3.mp3]		중급	낯익다	낯선 남자.		우리 집 개가 낯선 사람을 보고 으르렁거리기 시작했다.		[形容词]陌生	이렇게 보니 너무 [낯선]데.	看起来有些陌生了啊。	1	[sound:7490836.mp3]<img width="3282" alt="image" src="https://user-images.githubusercontent.com/46834121/190925772-4d29a9fb-fbaf-4329-bd99-085491b9b2e5.png">
 ...
 ```
 
