@@ -10,7 +10,7 @@ import os
 import zipfile
 
 from main import download_info
-from get_audio_async import make_audio_path
+from get_audio import make_audio_path
 import pandas as pd
 import requests
 
@@ -34,13 +34,13 @@ TO_SAVE_FILES_DICT = {
     "wordAudioResource": "words",
     "textResource": "files",
 }
-FILES_ROOT = "CICHANG_FILES_OUT"
-DEFAULT_WORD_FILE_ROOT = os.path.join(FILES_ROOT, "files", "word.txt")
-DEFAULT_TO_CSV_NAME = "my_learning_book.csv"
 
-DEFAULT_WORD_LIST_NAME = "words.txt"
-IN_FILES_ROOT = "JJOGAEGI_OUT"
-DEFAULT_JJOGAEGI_OUTPUT_NAME = os.path.join(IN_FILES_ROOT, "jjogaegi_output.csv")
+FILES_ROOT = os.path.join("OUTPUT", "CICHANG_FILES_OUT")
+DEFAULT_WORD_FILE_ROOT = os.path.join(FILES_ROOT, "files", "word.txt")
+DEFAULT_TO_CSV_NAME = os.path.join("OUTPUT", "my_learning_book.csv")
+
+DEFAULT_WORD_LIST = os.path.join(os.path.dirname(os.getcwd()), "words.txt")
+DEFAULT_JJOGAEGI_OUTPUT_NAME = os.path.join("OUTPUT", "jjogaegi_output.csv")
 
 
 def md5_encode(string):
@@ -174,9 +174,9 @@ def main(user_name, password):
         zip_pass = get_zip_password(str(version))
 
         # TODO for each book
-        file_dir = os.path.join("CICHANG_FILES_OUT", TO_SAVE_FILES_DICT.get(k))
-        if not os.path.exists(file_dir):
-            os.mkdir(file_dir)
+        file_dir = os.path.join(FILES_ROOT, TO_SAVE_FILES_DICT.get(k))
+        os.makedirs(file_dir, exist_ok=True)
+
         try:
             print(f"Downloading {url} please wait")
             download_zip_files(url, zip_pass, file_dir)
@@ -187,10 +187,10 @@ def main(user_name, password):
     df = parse_to_pandas()
 
     # save words only to a text list
-    with open(DEFAULT_WORD_LIST_NAME, "w") as f_out:
+    with open(DEFAULT_WORD_LIST, "w") as f_out:
         f_out.write("\n".join(df["Word"]))
 
-    download_info(DEFAULT_WORD_LIST_NAME)
+    download_info(DEFAULT_WORD_LIST)
 
     jjogaegi_df = pd.read_csv(DEFAULT_JJOGAEGI_OUTPUT_NAME, index_col=0)
     final_df = pd.concat([df, jjogaegi_df.reset_index(drop=True)], axis=1)

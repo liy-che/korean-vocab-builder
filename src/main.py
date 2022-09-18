@@ -6,15 +6,15 @@ import asyncio
 import os
 import sys
 
-import get_audio_async as get_audio
+import get_audio
 import pandas as pd
 
 import os, os.path
 import subprocess
 from datetime import datetime
 
-FILES_ROOT = "JJOGAEGI_OUT"
-DEFAULT_OUTPUT_NAME = os.path.join(FILES_ROOT, "jjogaegi_output.csv")
+OUTPUT_ROOT = "OUTPUT"
+DEFAULT_OUTPUT_NAME = os.path.join(OUTPUT_ROOT, "jjogaegi_output.csv")
 
 
 def download_info(path_to_word_list):
@@ -23,8 +23,10 @@ def download_info(path_to_word_list):
     if not os.path.isfile(list_path):
         sys.exit("Word list does not exist. Check your path.")
 
+    os.makedirs(OUTPUT_ROOT, exist_ok=True)
+
     # Run jjogaegi, output jjogaegi.csv
-    # jjogaegi -interactive -formatter csv -in words.txt -lookup -out output.csv -parser list -header "Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English"
+    # jjogaegi -interactive -formatter csv -in ../words.txt -lookup -out jjogaegi_output.csv -parser list -header "Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English"
     subprocess.call(['jjogaegi',
                     '-lookup', 
                     '-interactive',
@@ -35,7 +37,7 @@ def download_info(path_to_word_list):
                     '-header', 'Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English'])
 
     # Download audio files
-    filenames = asyncio.run(get_audio.main(list_path, FILES_ROOT, True))
+    filenames = asyncio.run(get_audio.main(list_path))
     filename_list = [get_audio.make_audio_path(pair[0]) for pair in filenames]
     is_synthetic = [("AI" if pair[1] == 0 else '') for pair in filenames]
 

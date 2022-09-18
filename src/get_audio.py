@@ -1,10 +1,11 @@
 # How to run:
-#   python get_audio_async.py [-h] [-i] [-o OUT_FOLDER] word_list_path
+#   python get_audio.py [-h] [-i] [-o OUT_FOLDER] word_list_path
 # Example:
-#   python get_audio_async.py -i -o audio_folder words.txt
+#   python get_audio.py -i -o audio_folder words.txt
 
 import argparse
 import asyncio
+from unittest.mock import DEFAULT
 import uuid
 import re
 import sys
@@ -21,7 +22,9 @@ from datetime import datetime
 # ignore SSL warning regarding certificate
 warnings.filterwarnings("ignore")
 
-DEFAULT_OUTPUT_FOLDER = "audio"
+OUTPUT_ROOT = "OUTPUT"
+DEFAULT_AUDIO_FOLDER = os.path.join(OUTPUT_ROOT, "word_audio")
+
 
 # The four scenarios
     # word is found, has audio
@@ -94,7 +97,7 @@ def get_speech():
     return get_input
 
 
-async def main(word_list_path, output_folder, getUuid):
+async def main(word_list_path, output_folder=DEFAULT_AUDIO_FOLDER, getUuid=True):
     word_list_path = word_list_path.lower()
     if not os.path.isfile(word_list_path):
         sys.exit("Error: Cannot find word list.")
@@ -122,7 +125,7 @@ async def main(word_list_path, output_folder, getUuid):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', action='store_true', dest="getUuid", help="Generate unique ids for filenames")
-    parser.add_argument("-o", "--out", metavar="FOLDER", default=DEFAULT_OUTPUT_FOLDER, help="Where to save downloaded audio files")
+    parser.add_argument("-o", "--out", metavar="FOLDER", default=DEFAULT_AUDIO_FOLDER, help="Where to save downloaded audio files")
     parser.add_argument("word_list_path", help="Path to text file which lists one word per line")
     options = parser.parse_args()
     start_time = datetime.now()
