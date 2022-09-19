@@ -183,6 +183,7 @@ def main(user_name, password):
             pass
 
     df = parse_to_pandas()
+    df.to_csv(DEFAULT_TO_CSV_NAME)
 
     # save words only to a text list
     with open(DEFAULT_WORD_LIST, "w") as f_out:

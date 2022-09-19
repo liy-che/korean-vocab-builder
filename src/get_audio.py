@@ -66,22 +66,22 @@ async def fetch_page(session, url):
         return page
 
 
-async def get_audio(session, query, filename, output_folder, text_to_speech):
+async def get_audio(session, query, filename_no_ext, output_folder, text_to_speech):
     # get audio link
     pageURL = "https://krdict.korean.go.kr/eng/dicSearch/search?nation=eng&nationCode=6&ParaWordNo=&mainSearchWord={}".format(query)
     page = await fetch_page(session, pageURL)
 
-    full_filename = os.path.join(output_folder, filename)
+    full_filename = os.path.join(output_folder, filename_no_ext+".mp3")
     audioURL = parse(query, page)
     if audioURL:
         async with session.get(audioURL) as resp:
             audio_data = await resp.read()
         await save_file(full_filename, audio_data)
-        return (filename, 1)
+        return (filename_no_ext, 1)
     else:
         await text_to_speech(query, full_filename)
         print("{} audio generated".format(query))
-        return (filename, 0)
+        return (filename_no_ext, 0)
 
 
 def get_speech():
@@ -120,8 +120,8 @@ async def main(word_list_path, output_folder=DEFAULT_AUDIO_FOLDER, getUuid=True)
                 query = line.strip()
                 if not query: continue
 
-                filename = (str(uuid.uuid4()) if getUuid else query) + ".mp3"
-                task = asyncio.ensure_future(get_audio(session, query, filename, output_folder, text_to_speech))
+                filename_no_ext = str(uuid.uuid4()) if getUuid else query
+                task = asyncio.ensure_future(get_audio(session, query, filename_no_ext, output_folder, text_to_speech))
                 tasks.append(task)
 
         filenames = await asyncio.gather(*tasks, return_exceptions=True)  
