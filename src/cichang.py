@@ -14,7 +14,7 @@ from get_audio import make_audio_path
 import pandas as pd
 import requests
 
-import os, os.path
+import os, os.path, sys
 
 HJ_APPKEY = "45fd17e02003d89bee7f046bb494de13"
 LOGIN_URL = "https://pass.hujiang.com/Handler/UCenter.json?action=Login&isapp=true&language=zh_CN&password={password}&timezone=8&user_domain=hj&username={user_name}"
@@ -138,6 +138,9 @@ def print_current_titles(learning_books_info):
 
 
 def main(user_name, password):
+    if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+        sys.exit("Error: Environment variable GOOGLE_APPLICATION_CREDENTIALS is not set.")
+
     s = login(user_name, password)
     learning_books_info = get_learning_books_info(s)
 

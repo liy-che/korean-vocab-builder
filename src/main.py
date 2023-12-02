@@ -34,6 +34,7 @@ def download_info(path_to_word_list):
                     '-parser', 'list',
                     '-in', os.path.expanduser(list_path), 
                     '-out', DEFAULT_OUTPUT_NAME,
+                    '-debug',
                     '-header', 'Note ID, External ID, Hangul, Hanja, Korean Definition, English Definition, Pronunciation, Audio, Image, Grade, Antonym, Example 1 Korean, Example 1 English, Example 2 Korean, Example 2 English'])
 
     # Download audio files
